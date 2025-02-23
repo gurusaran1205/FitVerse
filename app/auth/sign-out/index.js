@@ -3,15 +3,16 @@ import React, { useEffect, useState } from 'react'
 import { useNavigation, useRouter } from 'expo-router'
 import { TextInput } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import {auth} from './../../../configs/FirebaseConfigs'
-import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import {auth, db} from './../../../configs/FirebaseConfigs'
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from 'firebase/auth';
+import { getFirestore, setDoc, doc } from 'firebase/firestore';
 export default function signUp() {
   const navigation = useNavigation();
   const router = useRouter();
 
-  const [email,setEmail] = useState();
-  const [password,setPassword] = useState();
-  const [fullName,setFullName] = useState();
+  const [email,setEmail] = useState("");
+  const [password,setPassword] = useState("");
+  const [fullName,setFullName] = useState("");
 
   useEffect(() => {
     navigation.setOptions({
@@ -19,36 +20,43 @@ export default function signUp() {
     })
   },[]);
 
-  const OnCreateAccount = () => {
+  const saveUserData = async (userId, name, email) => {
+    try{
+      await setDoc(doc(db,"users",userId), {
+        fullName: name,
+        email: email,
+        createdAt: new Date(),
+      });
+      console.log("User data saved to Firestore! ")
+    }catch(error){
+      console.error("Error saving user data: ", error);
+    }
+  };
+
+  const OnCreateAccount = async(name,email,password) => {
     if(!email && !password && !fullName){
       ToastAndroid.show('Please Enter All Details,',ToastAndroid.BOTTOM)
       return ;
     }
-
-    createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      // Signed up 
+    try{
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       const user = userCredential.user;
-      sendEmailVerification(user).then(() => {
-        console.log(user);
-        ToastAndroid.show('User Account Created',ToastAndroid.BOTTOM)
-        router.replace('/mydiet');
 
-      }).catch(e => {
-        Alert.alert("Email could not be verified!")
-        console.error(e)
-      })
-      
-      
-      // ...
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorMessage,errorCode)
-      // ..
-    });
-  }
+      await updateProfile(user, {
+        displayName: fullName,
+      });
+
+      await saveUserData(user.uid, fullName, email);
+
+
+      await sendEmailVerification(user);
+      ToastAndroid.show('User Account Created',ToastAndroid.BOTTOM)
+      router.replace('/mydiet');
+    }catch (error){
+      console.error(error.message);
+      ToastAndroid.show('Sign-up failed: ' + error.message, ToastAndroid.LONG);
+    }
+  };
 
   return (
     <View style={{

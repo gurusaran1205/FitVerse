@@ -14,7 +14,11 @@ export default function Index() {
       }}
     >
       
+      {user?
+        <Redirect href={'/mydiet'}/>:
         <Login />
+
+    }
 
       
 
