@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid, Alert } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid, Alert, ImageBackground } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation, useRouter } from 'expo-router'
 import { TextInput } from 'react-native'
@@ -59,19 +59,25 @@ export default function signUp() {
   };
 
   return (
+    <ImageBackground 
+          source={require('../../../assets/images/signup1.jpeg')}
+          style={styles.background}
+          imageStyle={{opacity:1}}
+        
+        >
     <View style={{
       padding:25,
       paddingTop:50,
-      backgroundColor:'white',
       height:'100%'
     }}>
       <TouchableOpacity onPress={() => router.back()}>
-        <MaterialIcons name="arrow-back-ios-new" size={24} color="black" />
+        <MaterialIcons name="arrow-back-ios-new" size={24} color='#D4FF00' />
       </TouchableOpacity>
 
       <Text style={{
         fontSize:30,
-        fontFamily:'outfit-bold'
+        fontFamily:'outfit-bold',
+        color:'#D4FF00'
       }}>Create New Account</Text>
 
 
@@ -80,9 +86,13 @@ export default function signUp() {
         marginTop:20
       }}>
         <Text style={{
-          fontFamily:'outfit'
+          fontFamily:'outfit',
+          color:'#D4FF00'
+          
+          
+
         }}>Full Name</Text>
-        <TextInput style={styles.holder} placeholder='Enter Full Name'
+        <TextInput style={styles.holder} placeholder='Enter Full Name' placeholderTextColor='gray'
          onChangeText={(value)=>setFullName(value)} 
         />
       </View>
@@ -92,7 +102,8 @@ export default function signUp() {
         marginTop:20
       }}>
         <Text style={{
-          fontFamily:'outfit'
+          fontFamily:'outfit',
+          color:'#D4FF00'
         }}>Email</Text>
         <TextInput style={styles.holder} placeholder='Enter Email'
          onChangeText={(value)=>setEmail(value)}
@@ -105,23 +116,24 @@ export default function signUp() {
         marginTop:20
       }}>
         <Text style={{
-          fontFamily:'outfit'
+          fontFamily:'outfit',
+          color:'#D4FF00'
         }}>Password</Text>
-        <TextInput secureTextEntry={true} style={styles.holder} placeholder='Enter Your Password'
+        <TextInput secureTextEntry={true} style={styles.holder} placeholder='Enter Your Password' placeholderTextColor='gray'
          onChangeText={(value)=>setPassword(value)}
         />
       </View>
       {/*Create Account */}
       
-      <TouchableOpacity onPress={OnCreateAccount} style={{
+      <TouchableOpacity onPress={() => OnCreateAccount(fullName,email,password)} style={{
         padding:20,
         marginTop:30,
-        backgroundColor:'black',
+        backgroundColor:'#D4FF00',
         borderRadius:15
 
       }}>
         <Text style={{
-          color:'white',
+          color:'black',
           fontFamily:'outfit-bold',
           textAlign:'center'
         }}>Create Account</Text>
@@ -135,13 +147,14 @@ export default function signUp() {
       style={{
         padding:20,
         marginTop:30,
-        backgroundColor:'white',
+        backgroundColor:'black',
         borderRadius:15,
         borderWidth:1,
+        borderColor:'#D4FF00'
 
       }}>
         <Text style={{
-          color:'black',
+          color:'#D4FF00',
           fontFamily:'outfit-bold',
           textAlign:'center'
         }}>Sign In</Text>
@@ -149,6 +162,7 @@ export default function signUp() {
       
 
     </View>
+    </ImageBackground>
   )
 }
 
@@ -158,7 +172,8 @@ const styles = StyleSheet.create({
     borderWidth:1,
     borderRadius:15,
     borderColor:'gray',
-    fontFamily:'outfit'
+    fontFamily:'outfit',
+    color:'white'
 
   }
 });

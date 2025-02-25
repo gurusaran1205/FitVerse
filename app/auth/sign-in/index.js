@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid, ImageBackground } from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation } from 'expo-router'
 import {Colors} from '../../../app-example/constants/Colors'
@@ -55,10 +55,15 @@ export default function signIn() {
   }
 
   return (
+    <ImageBackground 
+      source={require('../../../assets/images/back2.jpeg')}
+      style={styles.background}
+      imageStyle={{opacity:1}}
+    
+    >
     <View style={{
       padding:25,
-      paddingTop:40,
-      backgroundColor:'white',
+      paddingTop:30,
       height:'100%',
       marginBottom:10
     }}>
@@ -69,30 +74,35 @@ export default function signIn() {
       <Text style={{
         fontFamily:'outfit-bold',
         fontSize:30,
-        marginTop:10
+        marginTop:10,
+        color:'#D4FF00'
       }}>Let's Sign You In</Text>
       <Text style={{
         fontFamily:'outfit',
         fontSize:30,
-        color:'gray',
+        color:'white',
         marginTop:10
       }}>Welcome Back</Text>
       <Text style={{
         fontFamily:'outfit-bold',
         fontSize:30,
-        color:'gray',
+        color:'white',
         marginTop:10
       }}>You've Been Missed ..</Text>
 
 
       {/*Email */}
       <View style={{
-        marginTop:20
+        marginTop:20,
+        paddingTop:30
+      
       }}>
         <Text style={{
-          fontFamily:'outfit'
+          fontFamily:'outfit-medium',
+          fontSize:17,
+          color:'#D4FF00'
         }}>Email</Text>
-        <TextInput value={email} style={styles.holder} onChangeText={(value) => setEmail(value)} placeholder='Enter Email'/>
+        <TextInput value={email} style={styles.holder} onChangeText={(value) => setEmail(value)} placeholder='Enter Email' placeholderTextColor={'white'}/>
       </View>
 
 
@@ -101,9 +111,11 @@ export default function signIn() {
         marginTop:20
       }}>
         <Text style={{
-          fontFamily:'outfit'
+          fontFamily:'outfit-medium',
+          fontSize:17,
+          color:'#D4FF00'
         }}>Password</Text>
-        <TextInput secureTextEntry={true} style={styles.holder} onChangeText={(value) => setPassword(value)} placeholder='Enter Your Password'/>
+        <TextInput secureTextEntry={true} style={styles.holder} onChangeText={(value) => setPassword(value)} placeholder='Enter Your Password' placeholderTextColor={'white'}/>
       </View>
 
       {/*Sign In */}
@@ -111,12 +123,12 @@ export default function signIn() {
       <TouchableOpacity onPress={onSignIn} style={{
         padding:20,
         marginTop:40,
-        backgroundColor:'black',
+        backgroundColor:'#D4FF00',
         borderRadius:15
 
       }}>
         <Text style={{
-          color:'white',
+          color:'black',
           fontFamily:'outfit-bold',
           textAlign:'center'
         }}>SignIn</Text>
@@ -130,15 +142,17 @@ export default function signIn() {
       style={{
         padding:20,
         marginTop:30,
-        backgroundColor:'white',
+        backgroundColor:'black',
         borderRadius:15,
         borderWidth:1,
+        borderColor:'#D4FF00'
 
       }}>
         <Text style={{
-          color:'black',
+          color:'#D4FF00',
           fontFamily:'outfit-bold',
-          textAlign:'center'
+          textAlign:'center',
+          
         }}>Create Account</Text>
       </TouchableOpacity>
 
@@ -146,7 +160,7 @@ export default function signIn() {
       onPress={() => router.replace('/auth/forgot')}>
         <Text 
         style ={{
-        color:'blue',
+        color:'#D4FF00',
         padding:20,
         fontFamily:'outfit-bold',
         }}> 
@@ -155,6 +169,7 @@ export default function signIn() {
 
 
     </View>
+    </ImageBackground>
   )
 }
 
@@ -163,9 +178,15 @@ const styles = StyleSheet.create({
     padding:20,
     borderWidth:1,
     borderRadius:15,
-    borderColor:'gray',
-    fontFamily:'outfit'
+    borderColor:'white',
+    fontFamily:'outfit',
+    color:'#D4FF00'
 
+  },
+  background:{
+    flex:1,
+    justifyContent:'center',
+    alignItems:'center'
   }
 
 })

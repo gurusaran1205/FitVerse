@@ -1,9 +1,39 @@
-import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
-import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LogoutButton from '../../components/LogoutButton';
-
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../../configs/FirebaseConfigs';
 export default function Profile() {
+  const [healthData,setHealthData] = useState(null);
+
+  useEffect(() => {
+    const fetchHealthData = async () => {
+      try{
+        const userId = auth.currentUser.uid;
+        if(!userId){
+          Alert.alert("You are not logged in")
+          return;
+        }
+        const userDoc = await getDoc(doc(db,"healthData", userId));
+
+        if (userDoc.exists()){
+          setHealthData(userDoc.data());
+        }else{
+          Alert.alert("No data & Records found");
+        }
+
+      }catch(error){
+        console.log(error);
+        Alert.alert("Error, Failed to load data");
+
+      }
+    };
+    fetchHealthData();
+
+  },[]);
+
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -48,13 +78,16 @@ export default function Profile() {
 
         {/* Health Statistics Section */}
         <View style={styles.healthStatsWrapper}>
+        {healthData ? (
+          <>
+        
           <View style={styles.healthStatsItem}>
-            <Text style={styles.healthStatsTitle}>22.5</Text>
+            <Text style={styles.healthStatsTitle}>{healthData.bmi || "N/A"}</Text>
             <Text style={styles.healthStatsSubTitle}>BMI</Text>
           </View>
           <View style={styles.healthStatsItem}>
-            <Text style={styles.healthStatsTitle}>2500 kcal</Text>
-            <Text style={styles.healthStatsSubTitle}>Calories Burned</Text>
+            <Text style={styles.healthStatsTitle}>{healthData.sugar || "N/A"}</Text>
+            <Text style={styles.healthStatsSubTitle}>Sugar Level</Text>
           </View>
           <View style={styles.healthStatsItem}>
             <Text style={styles.healthStatsTitle}>10,000</Text>
@@ -64,6 +97,10 @@ export default function Profile() {
             <Text style={styles.healthStatsTitle}>2.5L</Text>
             <Text style={styles.healthStatsSubTitle}>Water Intake</Text>
           </View>
+          </>
+        ) : (
+          <Text style={styles.loadingText}>Loading Health Data...</Text>
+        ) }
         </View>
 
         
@@ -184,5 +221,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
   },
+  loadingText: {
+    fontSize:16,
+    color: 'gray',
+    textAlign:'center',
+    marginTop:20,
+  }
 });
 

@@ -19,9 +19,9 @@ return (
       <View style={styles.container}>
         <Text style={{
             fontSize:30,
-            fontFamily:'outfit-bold',
+            fontFamily:'caveat-bold',
             textAlign:'center',
-            color:'black',
+            color:'#D4FF00',
             marginTop:10
         }}> FIT VERSE </Text>
         <Text style={{
@@ -34,9 +34,9 @@ return (
         <TouchableOpacity style={styles.button}
             onPress= {() => router.push('auth/sign-in')}
         >
-            <Text style={{color:'white',
+            <Text style={{color:'black',
             textAlign:'center',
-            fontFamily:'outfit',
+            fontFamily:'outfit-medium',
             fontSize:18
             }}> Get Started </Text>
         </TouchableOpacity>
@@ -47,7 +47,7 @@ return (
 
 const styles = StyleSheet.create({
     container:{
-        backgroundColor:'white',
+        backgroundColor:'black',
         marginTop:-20,
         height:'100%',
         borderTopLeftRadius:20,
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     },
     button:{
         padding:15,
-        backgroundColor:'black',
+        backgroundColor:'#D4FF00',
         borderRadius:99,
         marginTop:'25%'
     }
