@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { Picker } from "@react-native-picker/picker"; // Install: npm install @react-native-picker/picker
 import { MotiView, MotiText } from "moti"; // Install: npm install moti
+import { auth, db} from "../../configs/FirebaseConfigs";
+import {doc, setDoc} from 'firebase/firestore';
 
 const BMICalculator = () => {
   const [height, setHeight] = useState(170);
@@ -15,6 +17,39 @@ const BMICalculator = () => {
     animate: { scale: 1, opacity: 1 },
     transition: { type: "spring", duration: 500 },
   };
+
+  const calculateBMI = (height, weight) => {
+    const heightInMeters = height/100;
+    return (weight / (heightInMeters * heightInMeters)).toFixed(2);
+  };
+
+  const bmi = calculateBMI(height, weight)
+
+  const saveHealthData = async () =>{
+    if(!height||!weight||!age||!heartRate||!bloodPressure){
+      Alert.alert("Please Enter all your Vitals")
+      return;
+    }
+    try{
+      const userId = auth.currentUser.uid;
+
+      await setDoc(doc(db, "Vitals", userId),{
+        height: height,
+        weight: weight,
+        bmi:bmi,
+        age: age,
+        heartRate: heartRate,
+        bloodPressure: bloodPressure,
+        updatedAt: new Date(),
+      });
+      Alert.alert("Your Vitals has been stored!");
+    }
+    catch(error){
+      console.error("Error in saving the data: ", error);
+      Alert.alert("Failed to save the data")
+
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -96,7 +131,7 @@ const BMICalculator = () => {
 
       {/* Submit Button */}
       <MotiView {...animatedScale}>
-        <TouchableOpacity style={styles.startButton} activeOpacity={0.7}>
+        <TouchableOpacity style={styles.startButton} activeOpacity={0.7} onPress={saveHealthData}>
           <MotiText animate={{ scale: 1.1 }} transition={{ type: "spring" }} style={styles.startButtonText}>
             Let's Begin
           </MotiText>

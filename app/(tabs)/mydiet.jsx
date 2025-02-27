@@ -24,7 +24,7 @@ export default function MyDiet() {
       <Text style={{
         fontFamily:'outfit-bold',
         fontSize:35
-        }}>My Diet</Text>
+        }}>Fit Verse</Text>
         <Ionicons name="add-circle-sharp" size={40} color="black" />
       </View>
 

@@ -6,6 +6,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../../configs/FirebaseConfigs';
 export default function Profile() {
   const [healthData,setHealthData] = useState(null);
+  const [fullName, setFullName] = useState("");
 
   useEffect(() => {
     const fetchHealthData = async () => {
@@ -15,10 +16,19 @@ export default function Profile() {
           Alert.alert("You are not logged in")
           return;
         }
-        const userDoc = await getDoc(doc(db,"healthData", userId));
+        const userDoc = await getDoc(doc(db, "users", userId));
+        if(userDoc.exists()){
+          setFullName(userDoc.data().fullName);
+        }
+        else{
+          Alert.alert("User not found");
+        }
 
-        if (userDoc.exists()){
-          setHealthData(userDoc.data());
+
+        const healthDoc = await getDoc(doc(db,"Vitals", userId));
+
+        if (healthDoc.exists()){
+          setHealthData(healthDoc.data());
         }else{
           Alert.alert("No data & Records found");
         }
@@ -45,58 +55,40 @@ export default function Profile() {
         <Image style={styles.userImg} source={require('../../assets/images/login1.png')} />
 
         {/* User Name & Bio */}
-        <Text style={styles.userName}>Gurusaran A B</Text>
+        <Text style={styles.userName}>{fullName}</Text>
         <Text style={styles.aboutUser}>
           Passionate about fitness and a healthy lifestyle. Let's achieve our goals together!
         </Text>
-
-        {/* Profile Buttons */}
-        <View style={styles.userBtnWrapper}>
-          <TouchableOpacity style={styles.userBtn} onPress={() => {}}>
-            <Text style={styles.userBtnTxt}>Message</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.userBtn} onPress={() => {}}>
-            <Text style={styles.userBtnTxt}>Follow</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Social Info Section */}
-        <View style={styles.userInfoWrapper}>
-          <View style={styles.userInfoItem}>
-            <Text style={styles.userInfoTitle}>22</Text>
-            <Text style={styles.userInfoSubTitle}>Posts</Text>
-          </View>
-          <View style={styles.userInfoItem}>
-            <Text style={styles.userInfoTitle}>1.5K</Text>
-            <Text style={styles.userInfoSubTitle}>Followers</Text>
-          </View>
-          <View style={styles.userInfoItem}>
-            <Text style={styles.userInfoTitle}>180</Text>
-            <Text style={styles.userInfoSubTitle}>Following</Text>
-          </View>
-        </View>
 
         {/* Health Statistics Section */}
         <View style={styles.healthStatsWrapper}>
         {healthData ? (
           <>
-        
+          <View style={styles.healthStatsItem}>
+            <Text style={styles.healthStatsTitle}>{healthData.weight} kg</Text>
+            <Text style={styles.healthStatsSubTitle}>Weight</Text>
+          </View>
+          <View style={styles.healthStatsItem}>
+            <Text style={styles.healthStatsTitle}>{healthData.height} cm</Text>
+            <Text style={styles.healthStatsSubTitle}>Height</Text>
+          </View>
           <View style={styles.healthStatsItem}>
             <Text style={styles.healthStatsTitle}>{healthData.bmi || "N/A"}</Text>
             <Text style={styles.healthStatsSubTitle}>BMI</Text>
           </View>
           <View style={styles.healthStatsItem}>
-            <Text style={styles.healthStatsTitle}>{healthData.sugar || "N/A"}</Text>
-            <Text style={styles.healthStatsSubTitle}>Sugar Level</Text>
+            <Text style={styles.healthStatsTitle}>{healthData.age || "N/A"}</Text>
+            <Text style={styles.healthStatsSubTitle}>Age</Text>
           </View>
           <View style={styles.healthStatsItem}>
-            <Text style={styles.healthStatsTitle}>10,000</Text>
-            <Text style={styles.healthStatsSubTitle}>Steps Walked</Text>
+            <Text style={styles.healthStatsTitle}>{healthData.heartRate || "N/A"}</Text>
+            <Text style={styles.healthStatsSubTitle}>Heart Rate</Text>
           </View>
           <View style={styles.healthStatsItem}>
-            <Text style={styles.healthStatsTitle}>2.5L</Text>
-            <Text style={styles.healthStatsSubTitle}>Water Intake</Text>
+            <Text style={styles.healthStatsTitle}>{healthData.bloodPressure?.systolic}/{healthData.bloodPressure?.diastolic} mmHg</Text>
+            <Text style={styles.healthStatsSubTitle}>Blood Pressure</Text>
           </View>
+
           </>
         ) : (
           <Text style={styles.loadingText}>Loading Health Data...</Text>
@@ -115,7 +107,7 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: 'black',
     padding: 20,
   },
   scrollView: {
@@ -131,17 +123,18 @@ const styles = StyleSheet.create({
     borderRadius: 75,
     marginTop: 20,
     borderWidth: 2,
-    borderColor: 'black',
+    borderColor: '#D4FF00',
   },
   userName: {
     fontSize: 22,
     fontWeight: 'bold',
     marginTop: 10,
+    color:'#D4FF00'
   },
   aboutUser: {
     textAlign: 'center',
     fontSize: 14,
-    color: '#666',
+    color: 'white',
     marginVertical: 10,
     paddingHorizontal: 30,
   },
@@ -150,7 +143,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   userBtn: {
-    backgroundColor: 'black',
+    backgroundColor: '#D4FF00',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
@@ -162,7 +155,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   userBtnTxt: {
-    color: 'white',
+    color: 'black',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -174,12 +167,12 @@ const styles = StyleSheet.create({
   },
   healthStatsItem: {
     width: '45%',
-    backgroundColor: '#fff',
+    backgroundColor: '#D4FF00',
     padding: 15,
     margin: 5,
     borderRadius: 10,
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: 'white',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
@@ -202,7 +195,7 @@ const styles = StyleSheet.create({
   userInfoItem: {
     alignItems: 'center',
     padding: 15,
-    backgroundColor: '#fff',
+    backgroundColor: '#D4FF00',
     borderRadius: 10,
     marginHorizontal: 10,
     width: 100,
