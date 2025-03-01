@@ -51,7 +51,7 @@ export default function signUp() {
 
       await sendEmailVerification(user);
       ToastAndroid.show('User Account Created',ToastAndroid.BOTTOM)
-      router.replace('/mydiet');
+      router.replace('forms/Vitals');
     }catch (error){
       console.error(error.message);
       ToastAndroid.show('Sign-up failed: ' + error.message, ToastAndroid.LONG);
@@ -77,7 +77,8 @@ export default function signUp() {
       <Text style={{
         fontSize:30,
         fontFamily:'outfit-bold',
-        color:'#D4FF00'
+        color:'#D4FF00',
+        paddingTop:20
       }}>Create New Account</Text>
 
 
@@ -105,7 +106,7 @@ export default function signUp() {
           fontFamily:'outfit',
           color:'#D4FF00'
         }}>Email</Text>
-        <TextInput style={styles.holder} placeholder='Enter Email'
+        <TextInput style={styles.holder} placeholder='Enter Email' placeholderTextColor='gray'
          onChangeText={(value)=>setEmail(value)}
         />
       </View>

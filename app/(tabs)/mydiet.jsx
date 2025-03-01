@@ -12,7 +12,7 @@ export default function MyDiet() {
     <View style={{
       padding:25,
       paddingTop:55,
-      backgroundColor:'white',
+      backgroundColor:'black',
       height:'100%'
     }}>
       <View style={{
@@ -22,10 +22,11 @@ export default function MyDiet() {
         justifyContent:'space-between'
       }}>
       <Text style={{
-        fontFamily:'outfit-bold',
-        fontSize:35
+        fontFamily:'Caveat-Bold',
+        fontSize:50,
+        color:'#D4FF00'
         }}>Fit Verse</Text>
-        <Ionicons name="add-circle-sharp" size={40} color="black" />
+        <Ionicons name="add-circle-sharp" size={60} color="#D4FF00" />
       </View>
 
       <HealthCalendar/>

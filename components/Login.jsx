@@ -1,10 +1,19 @@
 import { View, Text, Image, StyleSheet, Touchable, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { useRouter } from 'expo-router'
+import { useFonts } from 'expo-font';
 
 export default function Login() {
 
     const router = useRouter();
+    const [fontsLoaded] = useFonts({
+        'Caveat-Bold': require('./../assets/fonts/Caveat-Bold.ttf'),
+        'outfit': require('./../assets/fonts/Outfit-Regular.ttf'),
+      });
+    
+      if (!fontsLoaded) {
+        return null; // Prevent rendering until fonts are loaded
+      }
 
      
 
@@ -18,12 +27,12 @@ return (
       />
       <View style={styles.container}>
         <Text style={{
-            fontSize:30,
-            fontFamily:'caveat-bold',
+            fontSize:50,
+            fontFamily:'Caveat-Bold',
             textAlign:'center',
             color:'#D4FF00',
             marginTop:10
-        }}> FIT VERSE </Text>
+        }}> Fit Verse </Text>
         <Text style={{
             fontSize:18,
             fontFamily:'outfit',
