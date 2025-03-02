@@ -120,18 +120,8 @@ export default function signIn() {
 
       {/*Sign In */}
 
-      <TouchableOpacity onPress={onSignIn} style={{
-        padding:20,
-        marginTop:40,
-        backgroundColor:'#D4FF00',
-        borderRadius:15
-
-      }}>
-        <Text style={{
-          color:'black',
-          fontFamily:'outfit-bold',
-          textAlign:'center'
-        }}>SignIn</Text>
+      <TouchableOpacity onPress={onSignIn} style={[styles.button, styles.signInButton]} activeOpacity={0.7}>
+        <Text style={styles.buttonText}>SignIn</Text>
       </TouchableOpacity>
 
       {/*Sign Up */}
@@ -175,18 +165,55 @@ export default function signIn() {
 
 const styles = StyleSheet.create({
   holder:{
-    padding:20,
+    padding:18,
     borderWidth:1,
     borderRadius:15,
-    borderColor:'white',
+    borderColor:'rgba(255,255,255,0.5)',
     fontFamily:'outfit',
-    color:'#D4FF00'
+    color:'#D4FF00',
+    backgroundColor:'rgba(255,255,255,0.1)',
+    backdropFilter: 'blue(5px)'
 
   },
   background:{
     flex:1,
     justifyContent:'center',
     alignItems:'center'
+  },
+  button: {
+    padding: 20,
+    marginTop: 40,
+    borderRadius: 15,
+    alignItems: 'center',
+    shadowColor: '#D4FF00',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 5, // For Android shadow effect
+  },
+  signInButton: {
+      backgroundColor: '#D4FF00',
+  },
+  signUpButton: {
+      backgroundColor: 'black',
+      borderColor: '#D4FF00',
+      borderWidth: 1,
+  },
+  buttonText: {
+      color: 'black',
+      fontFamily: 'outfit-bold',
+      textAlign: 'center',
+      fontSize: 16,
+  },
+  signUpText: {
+      color: '#D4FF00',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dark overlay for better readability
   }
+
+
+
 
 })

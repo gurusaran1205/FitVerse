@@ -6,7 +6,7 @@ import { useEffect } from 'react'
 import { TextInput } from 'react-native'
 import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/auth';
+import { sendPasswordResetEmail } from 'firebase/auth';
 import {auth} from './../../../configs/FirebaseConfigs'
 
 
@@ -44,56 +44,61 @@ export default function ForgotPassword() {
     <View style={{
       padding:25,
       paddingTop:40,
-      backgroundColor:'white',
+      backgroundColor:'black',
       height:'100%',
       marginBottom:10
     }}>
       <TouchableOpacity onPress={() => router.back()}>
-      <MaterialIcons name="arrow-back-ios-new" size={24} color="black" />
+      <MaterialIcons name="arrow-back-ios-new" size={24} color="#D4FF00" />
       </TouchableOpacity>
       
       <Text style={{
         fontFamily:'outfit-bold',
         fontSize:30,
-        marginTop:10
+        marginTop:20,
+        color:'#D4FF00',
       }}>Forgot Your Password??</Text>
       <Text style={{
         fontFamily:'outfit',
         fontSize:30,
-        color:'gray',
+        color:'white',
         marginTop:10
       }}>Reset it here</Text>
       <Text style={{
         fontFamily:'outfit-bold',
         fontSize:30,
-        color:'gray',
+        color:'white',
         marginTop:10
       }}>You've Been Missed ..</Text>
 
 
       {/*Email */}
       <View style={{
-        marginTop:20
+        marginTop:20,
+        paddingTop:30
       }}>
         <Text style={{
-          fontFamily:'outfit'
+          fontFamily:'outfit-medium',
+          fontSize:17,
+          color:'#D4FF00'
         }}>Email</Text>
-        <TextInput value={email} style={styles.holder} onChangeText={(value) => setEmail(value)} placeholder='Enter Email'/>
+        <TextInput value={email} style={styles.holder} onChangeText={(value) => setEmail(value)} placeholder='Enter Email' placeholderTextColor='gray'/>
       </View>
 
       {/*Sign In */}
 
       <TouchableOpacity onPress={handleForgot} style={{
         padding:20,
-        marginTop:40,
-        backgroundColor:'black',
+        marginTop:30,
+        backgroundColor:'#D4FF00',
         borderRadius:15
 
       }}>
         <Text style={{
-          color:'white',
+          color:'black',
           fontFamily:'outfit-bold',
-          textAlign:'center'
+          textAlign:'center',
+          fontSize:16
         }}>Submit</Text>
       </TouchableOpacity>
 
@@ -105,13 +110,14 @@ export default function ForgotPassword() {
       style={{
         padding:20,
         marginTop:30,
-        backgroundColor:'white',
+        backgroundColor:'black',
         borderRadius:15,
         borderWidth:1,
+        borderColor:'#D4FF00'
 
       }}>
         <Text style={{
-          color:'black',
+          color:'#D4FF00',
           fontFamily:'outfit-bold',
           textAlign:'center'
         }}>Back to Login</Text>
@@ -121,12 +127,14 @@ export default function ForgotPassword() {
 }
 
 const styles = StyleSheet.create({
-  holder:{
-    padding:20,
-    borderWidth:1,
-    borderRadius:15,
-    borderColor:'gray',
-    fontFamily:'outfit'
+  
+    holder:{
+      padding:20,
+      borderWidth:1,
+      borderRadius:15,
+      borderColor:'gray',
+      fontFamily:'outfit',
+      color:'white'
 
   }
 

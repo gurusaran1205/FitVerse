@@ -18,21 +18,12 @@ export default function Login() {
      
 
 return (
-    <View>
-      <Image source={require('./../assets/images/login2.png')}
-        style={{
-            width:'100%',
-            height:520
-        }}
+    <View style={styles.imageWrapper}>
+      <Image source={require('./../assets/images/start2.jpeg')}
+        style={styles.image}
       />
       <View style={styles.container}>
-        <Text style={{
-            fontSize:50,
-            fontFamily:'Caveat-Bold',
-            textAlign:'center',
-            color:'#D4FF00',
-            marginTop:10
-        }}> Fit Verse </Text>
+        <Text style={styles.title}> Fit Verse </Text>
         <Text style={{
             fontSize:18,
             fontFamily:'outfit',
@@ -43,11 +34,7 @@ return (
         <TouchableOpacity style={styles.button}
             onPress= {() => router.push('auth/sign-in')}
         >
-            <Text style={{color:'black',
-            textAlign:'center',
-            fontFamily:'outfit-medium',
-            fontSize:18
-            }}> Get Started </Text>
+            <Text style={styles.buttonText}> Get Started </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -67,7 +54,40 @@ const styles = StyleSheet.create({
         padding:15,
         backgroundColor:'#D4FF00',
         borderRadius:99,
-        marginTop:'25%'
+        marginTop:'10%',
+        shadowColor: '#D4FF00',
+        shadowOffset: {width: 0, height: 4},
+        shadowOpacity: 0.6,
+        shadowRadius: 8,
+        elevation: 10,
+        transform: [{scale: 1}],
+    },
+    buttonText:{
+      color:'black',
+      textAlign:'center',
+      fontFamily:'outfit-medium',
+      fontSize:18,
+    },
+    imageWrapper:{
+      position:'relative',
+      width:'100%',
+      height:600,
+    },
+    image:{
+      width:'100%',
+      height:'100%',
+      resizeMode: 'cover'
+    },
+    title:{
+      fontSize:50,
+      fontFamily:'Caveat-Bold',
+      textAlign:'center',
+      color:'#D4FF00',
+      marginTop:10,
+      textShadowColor: '#D4FF00',
+      textShadowOffset: {width: 0, height: 0},
+      textShadowRadius: 12,
+
     }
 })
 

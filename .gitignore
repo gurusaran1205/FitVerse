@@ -3,6 +3,7 @@
 # dependencies
 node_modules/
 configs/FirebaseConfigs.js
+.env
 
 # Expo
 .expo/
