@@ -8,7 +8,6 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "entryPoint": "expo-router/entry",
     "ios": {
       "supportsTablet": true
     },
@@ -16,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.anonymous.FitVerse"
     },
     "web": {
       "bundler": "metro",

@@ -4,12 +4,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { getDoc, doc } from 'firebase/firestore';
 import { auth, db} from "../../configs/FirebaseConfigs";
 
-
-
-
 const genAI = new GoogleGenerativeAI("AIzaSyBvHAM4fhg9Mfmx0QGD6Wvrlo9oQkW9Stw");
-
-
 
 const Recommendation = () => {
   const [vitals, setVitals] = useState(null);
