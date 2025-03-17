@@ -51,7 +51,7 @@ export default function signUp() {
 
       await sendEmailVerification(user);
       ToastAndroid.show('User Account Created',ToastAndroid.BOTTOM)
-      router.replace('forms/Vitals');
+      router.replace('/forms/Gender');
     }catch (error){
       console.error(error.message);
       ToastAndroid.show('Sign-up failed: ' + error.message, ToastAndroid.LONG);

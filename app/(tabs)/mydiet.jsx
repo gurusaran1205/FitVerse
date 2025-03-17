@@ -1,98 +1,165 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import React, { useEffect, useState } from 'react';
+import { getDoc, doc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../../configs/FirebaseConfigs';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import HealthCalendar from '../../components/HealthCalendar';
-import { getStreakData, updateStreak } from '../../utils/streakUtils';
 
-export default function MyDiet() {
+const StreakTracker = () => {
   const [streak, setStreak] = useState(0);
   const [highestStreak, setHighestStreak] = useState(0);
+  const [completedDates, setCompletedDates] = useState([]);
 
-  // Fetch streak data when component mounts
   useEffect(() => {
-    const fetchStreak = async () => {
-      const { currentStreak, highestStreak } = await getStreakData();
-      setStreak(currentStreak);
-      setHighestStreak(highestStreak);
-    };
-    fetchStreak();
+    fetchStreakData();
   }, []);
 
-  // Function to update streak when progress is logged
-  const handleTaskCompletion = async () => {
-    await updateStreak();
-    const { currentStreak, highestStreak } = await getStreakData();
-    setStreak(currentStreak);
-    setHighestStreak(highestStreak);
+  const fetchStreakData = async () => {
+    try {
+      const userId = auth.currentUser?.uid;
+      if (!userId) return;
+
+      const streakDoc = await getDoc(doc(db, 'Streaks', userId));
+      if (streakDoc.exists()) {
+        const data = streakDoc.data();
+        setStreak(data.currentStreak || 0);
+        setHighestStreak(data.highestStreak || 0);
+        setCompletedDates(data.completedDates || []);
+      }
+    } catch (error) {
+      console.error('Error fetching streak data:', error);
+    }
+  };
+
+  const updateStreak = async () => {
+    try {
+      const userId = auth.currentUser?.uid;
+      if (!userId) return;
+
+      const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+      let updatedStreak = streak;
+      let updatedCompletedDates = [...completedDates];
+
+      if (!completedDates.includes(today)) {
+        updatedCompletedDates.push(today);
+
+        const lastCompletedDate = completedDates[completedDates.length - 1];
+        if (lastCompletedDate) {
+          const lastDate = new Date(lastCompletedDate);
+          const todayDate = new Date(today);
+          const diffDays = (todayDate - lastDate) / (1000 * 60 * 60 * 24);
+          
+          if (diffDays === 1) {
+            updatedStreak += 1; // Increment streak if consecutive day
+          } else {
+            updatedStreak = 1; // Reset streak if skipped a day
+          }
+        } else {
+          updatedStreak = 1;
+        }
+      }
+
+      const updatedHighestStreak = Math.max(updatedStreak, highestStreak);
+      setStreak(updatedStreak);
+      setHighestStreak(updatedHighestStreak);
+      setCompletedDates(updatedCompletedDates);
+
+      await setDoc(doc(db, 'Streaks', userId), {
+        currentStreak: updatedStreak,
+        highestStreak: updatedHighestStreak,
+        completedDates: updatedCompletedDates,
+      });
+    } catch (error) {
+      console.error('Error updating streak:', error);
+    }
+  };
+
+  const renderItem = ({ item }) => (
+    <View style={[styles.dateBox, completedDates.includes(item) && styles.completedDate]}>
+      <Text style={styles.dateText}>{item.split('-')[2]}</Text>
+    </View>
+  );
+
+  const getLast7Days = () => {
+    let dates = [];
+    for (let i = 6; i >= 0; i--) {
+      let date = new Date();
+      date.setDate(date.getDate() - i);
+      dates.push(date.toISOString().split('T')[0]);
+    }
+    return dates;
   };
 
   return (
     <View style={styles.container}>
-      {/* Header Section */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Fit Verse</Text>
-        <TouchableOpacity 
-          style={styles.addButton}
-          activeOpacity={0.7}
-          onPress={handleTaskCompletion} // Update streak when pressed
-        >
-          <Ionicons name="add-circle-sharp" size={60} color="#D4FF00" />
-        </TouchableOpacity>
-      </View>
+      <Text style={styles.title}>🔥 Streak: {streak} Days</Text>
+      <Text style={styles.highestStreak}>🏆 Best Streak: {highestStreak} Days</Text>
 
-      {/* Streak Section */}
-      <View style={styles.streakContainer}>
-        <Text style={styles.streakText}>🔥 Streak: {streak} days</Text>
-        <Text style={styles.highestStreakText}>🏆 Best Streak: {highestStreak} days</Text>
-      </View>
+      <FlatList
+        data={getLast7Days()}
+        renderItem={renderItem}
+        keyExtractor={(item) => item}
+        horizontal
+        contentContainerStyle={styles.dateList}
+      />
 
-      {/* Health Calendar */}
-      <HealthCalendar />
+      <TouchableOpacity style={styles.button} onPress={updateStreak}>
+        <Ionicons name="checkmark-circle" size={24} color="black" />
+        <Text style={styles.buttonText}>Mark Today as Completed</Text>
+      </TouchableOpacity>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
-    padding: 25,
-    paddingTop: 55,
+    padding: 20,
     backgroundColor: 'black',
-    height: '100%',
-  },
-  header: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignContent: 'center',
-    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   title: {
-    fontFamily: 'Caveat-Bold',
-    fontSize: 50,
-    color: '#D4FF00',
-    textShadowColor: '#D4FF00',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 15,
-  },
-  addButton: {
-    borderRadius: 99,
-    padding: 8,
-    shadowColor: '#D4FF00',
-    shadowOpacity: 0.4,
-    shadowRadius: 3,
-  },
-  streakContainer: {
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  streakText: {
-    fontSize: 30,
-    color: '#D4FF00',
+    fontSize: 24,
     fontWeight: 'bold',
+    color: '#D4FF00',
   },
-  highestStreakText: {
-    fontSize: 18,
+  highestStreak: {
+    fontSize: 16,
     color: 'white',
-    marginTop: 5,
+    marginBottom: 20,
+  },
+  dateList: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginVertical: 15,
+  },
+  dateBox: {
+    width: 40,
+    height: 40,
+    margin: 5,
+    borderRadius: 10,
+    backgroundColor: '#444',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  completedDate: {
+    backgroundColor: '#D4FF00',
+  },
+  dateText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#D4FF00',
+    padding: 15,
+    borderRadius: 20,
+    marginTop: 20,
+  },
+  buttonText: {
+    fontSize: 18,
+    color: 'black',
+    marginLeft: 10,
   },
 });
 
+export default StreakTracker;
