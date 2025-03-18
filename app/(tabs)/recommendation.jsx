@@ -3,9 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { getDoc, doc } from 'firebase/firestore';
 import { auth, db } from '../../configs/FirebaseConfigs';
-import { useNavigation } from '@react-navigation/native';
-import Markdown from 'react-native-markdown-renderer';
+import Markdown from 'react-native-markdown-display';
 import { router } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 
 const genAI = new GoogleGenerativeAI('AIzaSyBvHAM4fhg9Mfmx0QGD6Wvrlo9oQkW9Stw'); // Secure your API key
 
@@ -15,12 +15,16 @@ const Recommendation = () => {
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
 
-  const handleNavigate = (plan) => {
+  const handleNavigate = (planTitle, planDetails) => {
     router.push({
-      pathname: '/PlanDetails',
-      params:{plan},
-
+      pathname: '/forms/PlanDetails',
+      params: { 
+        title: planTitle,
+        details: encodeURIComponent(planDetails), 
+      }, // Convert plan to string
     });
+    console.log("Details of:",planDetails)
+    
     
   }
 
@@ -81,17 +85,34 @@ const Recommendation = () => {
     try {
       const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
       const result = await model.generateContent(prompt);
-      const response = result.response.text();
+      // Check if the response exists before calling .text()
+      if (!result || !result.response) {
+        Alert.alert('Error: No response received from AI');
+        setLoading(false);
+        return;
+      }
 
-      // Split plans into an array
+      const response = result.response.text();
+      if (!response) {
+        Alert.alert('Error: Response is empty');
+        setLoading(false);
+        return;
+      }
+
+      // Split response into an array of plans
       const plans = response.split('**').filter((plan) => plan.includes('Plan'));
-      setRecommendations(plans);
-    } catch (error) {
-      console.error(error);
-      Alert.alert('Failed to get AI Suggestions, Try Again Later');
-    } finally {
-      setLoading(false);
-    }
+      const formattedPlans = plans.map((plan) => {
+        const [title, ...details] = plan.split('\n');
+        return { title: title.trim(), details: details.join('\n').trim() };
+      });
+
+      setRecommendations(formattedPlans);
+      } catch (error) {
+        console.error(error);
+        Alert.alert('Failed to get AI Suggestions, Try Again Later');
+      } finally {
+        setLoading(false);
+      }
   };
 
   return (
@@ -108,9 +129,9 @@ const Recommendation = () => {
         <TouchableOpacity 
           key={index} 
           style={styles.planCard}
-          onPress={() => handleNavigate(plan)}
+          onPress={() => handleNavigate(plan.title, plan.details)}
         >
-          <Markdown style={markdownStyles}>{plan}</Markdown>
+          <Markdown style={markdownStyles}>{plan.title}</Markdown>
         </TouchableOpacity>
       ))}
     </ScrollView>

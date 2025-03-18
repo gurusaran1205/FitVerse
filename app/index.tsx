@@ -5,6 +5,7 @@ import { Redirect } from "expo-router";
 import {useEffect, useState} from "react";
 import Gender from './forms/Gender'
 import Fitness from './../components/Fitness'
+import PlanDetails from './forms/PlanDetails'
 
 export default function Index() {
   const user = auth.currentUser;
