@@ -5,7 +5,6 @@ import { getDoc, doc } from 'firebase/firestore';
 import { auth, db } from '../../configs/FirebaseConfigs';
 import Markdown from 'react-native-markdown-display';
 import { router } from 'expo-router';
-import { useNavigation } from '@react-navigation/native';
 
 const genAI = new GoogleGenerativeAI('AIzaSyBvHAM4fhg9Mfmx0QGD6Wvrlo9oQkW9Stw'); // Secure your API key
 
@@ -13,20 +12,6 @@ const Recommendation = () => {
   const [vitals, setVitals] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(false);
-  const navigation = useNavigation();
-
-  const handleNavigate = (planTitle, planDetails) => {
-    router.push({
-      pathname: '/forms/PlanDetails',
-      params: { 
-        title: planTitle,
-        details: encodeURIComponent(planDetails), 
-      }, // Convert plan to string
-    });
-    console.log("Details of:",planDetails)
-    
-    
-  }
 
   useEffect(() => {
     const fetchVitals = async () => {
@@ -65,27 +50,25 @@ const Recommendation = () => {
       - Weight: ${vitals.weight} kg
       - BMI: ${vitals.bmi}
       - Blood Pressure: ${vitals.bloodPressure.systolic}/${vitals.bloodPressure.diastolic}
-      - Heart Rate: ${vitals.heartRate} bpm 
+      - Heart Rate: ${vitals.heartRate} bpm
 
-      Based on this, suggest a **healthy diet plan** and a **daily exercise routine** for me in three budget categories: low, medium, and high.
+      Based on this, suggest three different health plans with just their **titles** in three budget categories: low, medium, and high.
+      Each title should be unique and creative to reflect the type of plan, for example:  
+      - A beginner-friendly plan for low-budget users 💪🛶  
+      - A balanced plan for medium-budget users 🏃🥗  
+      - A premium, intensive plan for high-budget users 🔥🏆  
+
       Format your response as:
-      **Plan 1 (Low Budget)**
-      Diet: ...
-      Exercise: ...
+      **Plan 1 - Starter Boost 💡 (Low Budget)**
+      **Plan 2 - Balanced Wellness ⚖️ (Medium Budget)**
+      **Plan 3 - Elite Performance 🚀 (High Budget)**
 
-      **Plan 2 (Medium Budget)**
-      Diet: ...
-      Exercise: ...
-
-      **Plan 3 (High Budget)**
-      Diet: ...
-      Exercise: ...
     `;
 
     try {
       const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
       const result = await model.generateContent(prompt);
-      // Check if the response exists before calling .text()
+
       if (!result || !result.response) {
         Alert.alert('Error: No response received from AI');
         setLoading(false);
@@ -99,20 +82,16 @@ const Recommendation = () => {
         return;
       }
 
-      // Split response into an array of plans
-      const plans = response.split('**').filter((plan) => plan.includes('Plan'));
-      const formattedPlans = plans.map((plan) => {
-        const [title, ...details] = plan.split('\n');
-        return { title: title.trim(), details: details.join('\n').trim() };
-      });
+      // Extracting only the plan titles
+      const plans = response.split('**').filter((plan) => plan.includes('Plan')).map((plan) => plan.trim());
 
-      setRecommendations(formattedPlans);
-      } catch (error) {
-        console.error(error);
-        Alert.alert('Failed to get AI Suggestions, Try Again Later');
-      } finally {
-        setLoading(false);
-      }
+      setRecommendations(plans);
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Failed to get AI Suggestions, Try Again Later');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -120,18 +99,21 @@ const Recommendation = () => {
       <Text style={styles.title}>Your Health, Our Plan</Text>
 
       <TouchableOpacity style={styles.button} onPress={getSuggestions} disabled={loading}>
-        <Text style={styles.buttonText}>{loading ? 'Generating Plan...' : 'Get Diet & Exercise Plan'}</Text>
+        <Text style={styles.buttonText}>{loading ? 'Generating Plans...' : 'Get Diet & Exercise Plans'}</Text>
       </TouchableOpacity>
 
       {loading && <ActivityIndicator size="large" color="#D4FF00" style={styles.loader} />}
 
-      {recommendations.map((plan, index) => (
+      {recommendations.map((title, index) => (
         <TouchableOpacity 
           key={index} 
           style={styles.planCard}
-          onPress={() => handleNavigate(plan.title, plan.details)}
+          onPress={() => router.push({
+            pathname: '/forms/PlanDetails',
+            params: { title }, // Send only the title
+          })}
         >
-          <Markdown style={markdownStyles}>{plan.title}</Markdown>
+          <Markdown style={markdownStyles}>{title}</Markdown>
         </TouchableOpacity>
       ))}
     </ScrollView>
@@ -146,7 +128,7 @@ const styles = StyleSheet.create({
   button: { backgroundColor: '#D4FF00', padding: 15, borderRadius: 20, alignItems: 'center', marginBottom: 15 },
   buttonText: { fontSize: 18, fontFamily: 'outfit-bold', color: 'black' },
   loader: { marginTop: 10 },
-  planCard: { backgroundColor: '#222', padding: 15, borderRadius: 10, marginTop: 10, color:'white' },
+  planCard: { backgroundColor: '#222', padding: 15, borderRadius: 10, marginTop: 10 },
 });
 
 const markdownStyles = { body: { color: 'white', fontSize: 16, fontFamily: 'outfit-medium' } };

@@ -1,64 +1,99 @@
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import React, { useState } from 'react';
-import { auth, db } from '../../configs/FirebaseConfigs';
-import { doc, setDoc } from 'firebase/firestore';
+import { View, Text, ActivityIndicator, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import Markdown from 'react-native-markdown-display';
-import { useLocalSearchParams, router } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { getFirestore, collection, addDoc } from 'firebase/firestore';
+import {app} from '../../configs/FirebaseConfigs';
 
+
+const genAI = new GoogleGenerativeAI('AIzaSyBvHAM4fhg9Mfmx0QGD6Wvrlo9oQkW9Stw');
 
 const PlanDetails = () => {
-  const { title, details } = useLocalSearchParams();
-  console.log("Raw details received:", details);
-  const decodedDetails = details ? decodeURIComponent(details).toString().replace(/\\n/g, '\n') : "No details available."
-  console.log("Decoded Details:", decodedDetails);
-  const [loading, setLoading] = useState(false);
+  const { title } = useLocalSearchParams();
+  const [planDetails, setPlanDetails] = useState('');
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const db = getFirestore(app);
 
-  console.log("Decoded Details:", decodedDetails);
-
-  const savePlan = async () => {
-    if (!auth.currentUser?.uid){
-      Alert.alert('Error','You are not logged in!!');
+  const fetchPlanDetails = async () => {
+    if (!title) {
+      Alert.alert('Error', 'No plan title provided');
       return;
     }
 
+    setLoading(true);
+    const prompt = `Give a brief explanation for the following health plan: ${title}. Include a structured breakdown with diet recommendations, exercise routines, and any additional lifestyle changes.`;
 
     try {
-      setLoading(true);
-      const userId = auth.currentUser?.uid;
-      await setDoc(doc(db, 'SelectedPlan', userId), { plan:parsedPlan, date: new Date() });
-      Alert.alert('Plan Saved', 'Your selected plan has been stored successfully.');
-      router.replace('/Fitness');
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
+      const result = await model.generateContent(prompt);
+
+      if (!result || !result.response) {
+        Alert.alert('Error: No response received from AI');
+        setLoading(false);
+        return;
+      }
+
+      const response = result.response.text();
+      if (!response) {
+        Alert.alert('Error: Response is empty');
+        setLoading(false);
+        return;
+      }
+
+      setPlanDetails(response);
     } catch (error) {
       console.error(error);
-      Alert.alert('Error saving plan');
+      Alert.alert('Failed to get plan details, Try Again Later');
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchPlanDetails();
+  }, [title]);
+
+  const savePlanToFirebase = async () => {
+    try {
+      await addDoc(collection(db, 'userPlans'), {
+        title,
+        details: planDetails,
+        createdAt: new Date(),
+      });
+      Alert.alert('Success', 'Plan saved successfully!');
+      router.replace('/(tabs)/profile');
+    } catch (error) {
+      console.error('Error saving plan:', error);
+      Alert.alert('Error', 'Failed to save plan');
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{title}</Text>
-      <View style={styles.planCard}>
-      {decodedDetails && decodedDetails.trim() !== "" ? (
-        <Markdown style={markdownStyles}>{decodedDetails}</Markdown>
-      ) : (
-        <Text style={{ color: "white" }}>No details available.</Text>
-      )}
-      </View>
+      <ScrollView style={styles.content}>
+        <Text style={styles.title}>{title}</Text>
 
+        {loading ? (
+          <ActivityIndicator size="large" color="#D4FF00" />
+        ) : (
+          <Markdown style={markdownStyles}>{planDetails}</Markdown>
+        )}
+      </ScrollView>
+
+      {/* Sticky Bottom Buttons */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity 
-          style={[styles.yesButton, loading && styles.disabledButton]} 
-          onPress={savePlan}
-          disabled = {loading}
-          >
-          <Text style={styles.buttonText}>{loading? 'Saving...' : 'Yes, Save Plan' }</Text>
+        <TouchableOpacity style={styles.button} onPress={savePlanToFirebase}>
+          <Text style={styles.buttonText}>✅ Yes, Save Plan</Text>
         </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.noButton} 
-          onPress={() => router.back()}>
-          <Text style={styles.buttonText}>No, Choose Again</Text>
+
+        <TouchableOpacity style={[styles.button, styles.noButton]} onPress={() => router.back()}>
+          <Text style={styles.buttonText}>❌ No, Go Back</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.button, styles.regenerateButton]} onPress={fetchPlanDetails}>
+          <Text style={styles.buttonText}>🔄 Regenerate Plan</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -68,14 +103,34 @@ const PlanDetails = () => {
 export default PlanDetails;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: 'black', padding: 20, alignItems: 'center' },
-  title: { fontSize: 24, fontFamily: 'outfit-bold', color: '#D4FF00', marginBottom: 20 },
-  planCard: { backgroundColor: '#222', padding: 15, borderRadius: 10, marginBottom: 20 },
-  buttonContainer: { flexDirection: 'row', justifyContent: 'space-between', width: '100%' },
-  yesButton: { backgroundColor: '#D4FF00', padding: 15, borderRadius: 10, flex: 1, marginRight: 10 },
-  noButton: { backgroundColor: 'gray', padding: 15, borderRadius: 10, flex: 1 },
-  buttonText: { textAlign: 'center', fontSize: 18, fontFamily: 'outfit-bold', color: 'black' },
-  disabledButton: {backgroundColor:'#999'},
+  container: { flex: 1, backgroundColor: 'black' },
+  content: { flex: 1, padding: 20, marginBottom: 80 }, // Prevent content from hiding behind buttons
+  title: { fontSize: 22, fontFamily: 'outfit-bold', color: '#D4FF00', textAlign: 'center', marginBottom: 20 },
+
+  buttonContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 10,
+    right: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: 'black',
+    paddingVertical: 10,
+    borderRadius: 15,
+  },
+
+  button: {
+    flex: 1,
+    padding: 15,
+    backgroundColor: '#D4FF00',
+    borderRadius: 10,
+    alignItems: 'center',
+    marginHorizontal: 5,
+  },
+  noButton: { backgroundColor: '#FF3B30' },
+  regenerateButton: { backgroundColor: '#007AFF' },
+
+  buttonText: { fontSize: 16, fontFamily: 'outfit-medium', color: 'black' },
 });
 
 const markdownStyles = { body: { color: 'white', fontSize: 16, fontFamily: 'outfit-medium' } };
