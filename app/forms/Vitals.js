@@ -44,7 +44,7 @@ import React, { useState } from "react";
          updatedAt: new Date(),
        });
        Alert.alert("Your Vitals has been stored!");
-       router.replace('/mydiet')
+       router.replace('/forms/MedicalPreferencesForm')
      }
      catch(error){
        console.error("Error in saving the data: ", error);

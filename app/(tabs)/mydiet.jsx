@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { getDoc, doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../../configs/FirebaseConfigs';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import {router} from 'expo-router';
 
 const StreakTracker = () => {
   const [streak, setStreak] = useState(0);
@@ -104,7 +105,10 @@ const StreakTracker = () => {
 
       <TouchableOpacity style={styles.button} onPress={updateStreak}>
         <Ionicons name="checkmark-circle" size={24} color="black" />
-        <Text style={styles.buttonText}>Mark Today as Completed</Text>
+        
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.floatingButton} onPress={() => router.push("/forms/GpsTracker")}>
+        <Ionicons name="add" size={30} color="black" />
       </TouchableOpacity>
     </View>
   );
@@ -112,18 +116,21 @@ const StreakTracker = () => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 20,
-    backgroundColor: 'black',
-    alignItems: 'center',
+    backgroundColor: "black",
+    alignItems: "center",
+    justifyContent: "center",
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#D4FF00',
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#D4FF00",
+    marginBottom: 10,
   },
   highestStreak: {
-    fontSize: 16,
-    color: 'white',
+    fontSize: 18,
+    color: "white",
     marginBottom: 20,
   },
   dateList: {
@@ -148,17 +155,35 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#D4FF00',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#D4FF00",
     padding: 15,
     borderRadius: 20,
     marginTop: 20,
+    shadowColor: "#D4FF00",
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
   },
   buttonText: {
     fontSize: 18,
-    color: 'black',
+    color: "black",
     marginLeft: 10,
+    fontWeight: "bold",
+  },
+  floatingButton: {
+    position: "absolute",
+    bottom: 50,
+    right: 30,
+    backgroundColor: "#D4FF00",
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#D4FF00",
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
   },
 });
 
