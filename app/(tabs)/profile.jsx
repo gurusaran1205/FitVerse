@@ -4,6 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import LogoutButton from '../../components/LogoutButton';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../../configs/FirebaseConfigs';
+import AnalyticsButton from '../../components/AnalyticsButton';
+
 export default function Profile() {
   const [healthData,setHealthData] = useState(null);
   const [fullName, setFullName] = useState("");
@@ -98,6 +100,7 @@ export default function Profile() {
         
 
         {/* Logout Button */}
+        <AnalyticsButton/>
         <LogoutButton />
       </ScrollView>
     </SafeAreaView>
