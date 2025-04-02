@@ -3,12 +3,12 @@ import { View, Text, Button, Alert, TouchableOpacity } from "react-native";
 import { getAuth, signOut } from "firebase/auth";
 import { useRouter } from "expo-router";
 
-const ChatWithExperts = () => {
+const AnalyticsButton = () => {
   const router = useRouter();
   // Get Firebase Auth instance
 
   const handleLogout = async () => {
-    router.push("/forms/Chatbot")
+    router.push("/forms/EditProfile")
   };
 
   return (
@@ -34,10 +34,10 @@ const ChatWithExperts = () => {
           fontSize: 18,
           fontFamily:'outfit-bold',
           textAlign:'center'
-        }}>Chat With Arogya</Text>
+        }}>Edit Your Profile</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
-export default ChatWithExperts;
+export default AnalyticsButton;

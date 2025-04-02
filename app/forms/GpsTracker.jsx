@@ -13,11 +13,33 @@ export default function GpsTracker() {
   const [region, setRegion] = useState(null);
   const [tracking, setTracking] = useState(false);
 
+  // Request location permission and get initial location
+  useEffect(() => {
+    const getInitialLocation = async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Permission denied!", "Please enable location services.");
+        return;
+      }
+
+      const currentLocation = await Location.getCurrentPositionAsync({});
+      setLocation(currentLocation);
+      setRegion({
+        latitude: currentLocation.coords.latitude,
+        longitude: currentLocation.coords.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      });
+    };
+
+    getInitialLocation();
+  }, []);
+
   // Function to start tracking
   const startTracking = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert("Permission denied!");
+      Alert.alert("Permission denied!", "Please enable location services.");
       return;
     }
 
@@ -107,6 +129,7 @@ export default function GpsTracker() {
         <Ionicons name="arrow-back" size={28} color="white" />
       </TouchableOpacity>
 
+      {/* Map View */}
       <MapView
         style={styles.map}
         region={region}
@@ -203,4 +226,3 @@ const styles = StyleSheet.create({
     color: "black",
   },
 });
-

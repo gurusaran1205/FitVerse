@@ -10,7 +10,9 @@ import GpsTracker from './forms/GpsTracker'
 import TrackingSummary from './forms/TrackingSummary'
 import MedicalPreferencesForm from './forms/MedicalPreferencesForm'
 import Option1 from './forms/Option1'
-import Chatbot from './forms/Chatbot'
+import ChatWithExperts from './forms/ChatwithExperts'
+import DailyTasks from './forms/DailyTasks'
+
 
 export default function Index() {
   const user = auth.currentUser;
@@ -22,13 +24,12 @@ export default function Index() {
         flex: 1,
       }}
     >
-      
       {user?
         <Redirect href={'/mydiet'}/>:
         <Login />
 
-    } 
-
+    }
+      
     </View>
   );
 }

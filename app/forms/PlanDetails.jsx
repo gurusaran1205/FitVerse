@@ -23,7 +23,7 @@ const PlanDetails = () => {
     }
 
     setLoading(true);
-    const prompt = `Give a brief explanation for the following health plan: ${title}. Include a structured breakdown with diet recommendations, exercise routines, and any additional lifestyle changes.`;
+    const prompt = `Give a small explanation for the following health plan: ${title}. Include a daily tasks to do with respect to the plan which has sleep duration, water intake, aerobic activities, calories burnt.`;
 
     try {
       const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });

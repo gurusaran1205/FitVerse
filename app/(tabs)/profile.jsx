@@ -5,7 +5,8 @@ import LogoutButton from '../../components/LogoutButton';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../../configs/FirebaseConfigs';
 import AnalyticsButton from '../../components/AnalyticsButton';
-import ChatWithExperts from '../../components/ChatWithExperts';
+import ChatWithExperts from '../../components/ChatWithExpertsButton';
+import EditButton from '../../components/EditButton';
 
 export default function Profile() {
   const [healthData,setHealthData] = useState(null);
@@ -103,6 +104,7 @@ export default function Profile() {
         {/* Logout Button */}
         <ChatWithExperts/>
         <AnalyticsButton/>
+        <EditButton/>
         <LogoutButton />
       </ScrollView>
     </SafeAreaView>

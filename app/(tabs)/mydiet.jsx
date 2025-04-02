@@ -69,6 +69,7 @@ const StreakTracker = () => {
         highestStreak: updatedHighestStreak,
         completedDates: updatedCompletedDates,
       });
+      router.push("/forms/DailyTasks");
     } catch (error) {
       console.error('Error updating streak:', error);
     }

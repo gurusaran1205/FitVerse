@@ -4,6 +4,7 @@ import { Tabs } from 'expo-router';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 export default function TabLayout() {
   return (
     <Tabs screenOptions={{
@@ -37,6 +38,15 @@ export default function TabLayout() {
           tabBarIcon: ({color}) => <Ionicons name="people" size={24} color={'#D4FF00'} />
         }}
         />
+
+        <Tabs.Screen name='Chatbot'
+        options={{
+          tabBarLabel: 'Arogya',
+          tabBarIcon: ({color}) => <MaterialCommunityIcons name="robot" size={24} color="#D4FF00" />
+        }}
+        />
+
+        
     </Tabs>
   )
 }

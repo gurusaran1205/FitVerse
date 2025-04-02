@@ -11,9 +11,9 @@ const Option1 = () => {
 
   // Goal options
   const goals = [
-    { id: "lose", title: "Lose Weight", image: require("../../assets/images/login1.png") },
-    { id: "gain", title: "Gain Muscle", image: require("../../assets/images/login1.png") },
-    { id: "healthy", title: "Stay Healthy", image: require("../../assets/images/login1.png") }
+    { id: "lose", title: "Lose Weight", image: require("../../assets/images/weight.jpg") },
+    { id: "gain", title: "Gain Muscle", image: require("../../assets/images/muscle.jpg") },
+    { id: "healthy", title: "Stay Healthy", image: require("../../assets/images/healthy.jpg") }
   ];
 
   // Save to Firebase and navigate
