@@ -40,13 +40,12 @@ const ProfileUpdate = () => {
         bmi,
         age,
         heartRate,
-        bloodPressure,
-        profileImage: profileImage || null, // Save image URI if selected
+        bloodPressure, // Save image URI if selected
         updatedAt: new Date().toISOString(),
       };
 
       // Save data to Firestore
-      await setDoc(userDoc, profileData, { merge: true });
+      await setDoc(userDoc, Vitals, { merge: true });
 
       alert("Profile Updated Successfully!");
     } catch (error) {
