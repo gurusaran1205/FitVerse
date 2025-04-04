@@ -1,42 +1,22 @@
-name: React Native Firebase CI (Windows)
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
-
 jobs:
-  test:
+  deploy:
     runs-on: windows-latest
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'npm'
-
-      - name: Install Dependencies (Fix Conflicts)
-        run: npm install --legacy-peer-deps
 
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
 
-      - name: Authenticate with Firebase (Using Secret Token)
-        run: firebase use --token ${{ secrets.FIREBASE_TOKEN }}
+      - name: Authenticate Firebase
+        run: |
+          echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > $env:USERPROFILE\service-account.json
+          $env:GOOGLE_APPLICATION_CREDENTIALS="$env:USERPROFILE\service-account.json"
 
-      - name: Lint Code
-        run: npm run lint
-
-      - name: Run Tests
-        run: npm test
-
-      - name: Build Project
-        run: npm run build
+      - name: Deploy to Firebase
+        run: firebase deploy --only hosting
