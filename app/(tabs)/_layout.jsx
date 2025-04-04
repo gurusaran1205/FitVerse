@@ -5,6 +5,7 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+
 export default function TabLayout() {
   return (
     <Tabs screenOptions={{
@@ -46,6 +47,12 @@ export default function TabLayout() {
         }}
         />
 
+        <Tabs.Screen name='Communities'
+        options={{
+          tabBarLabel: 'Communities',
+          tabBarIcon: ({color}) => <MaterialCommunityIcons name="transit-connection-variant" size={24} color="#D4FF00" />
+        }}
+        />
         
     </Tabs>
   )
