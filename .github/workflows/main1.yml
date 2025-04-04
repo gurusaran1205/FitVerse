@@ -1,0 +1,22 @@
+jobs:
+  deploy:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Authenticate Firebase
+        run: |
+          echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > $env:USERPROFILE\service-account.json
+          $env:GOOGLE_APPLICATION_CREDENTIALS="$env:USERPROFILE\service-account.json"
+
+      - name: Deploy to Firebase
+        run: firebase deploy --only hosting
